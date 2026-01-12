@@ -1,35 +1,23 @@
-import { useActionState } from "react";
-import  {supabase}  from "./supabase-client"; // ✅ 1) import your supabase client (adjust path as needed)
-
-/**
-Challenge:
-* 1) Import the supabase client
-* 2) Insert the 'newDeal' object into the table (destructure only 'error')
-* 3) If error, console.log it + return new Error("...")
-* 4) Save + use the form
-*/
+import { useActionState } from 'react';
+import supabase from '../supabase-client';
 
 function Form({ metrics }) {
   const [error, submitAction, isPending] = useActionState(
     async (previousState, formData) => {
       const newDeal = {
-        name: formData.get("name"),
-        value: Number(formData.get("value")), // optional but nice: keep it numeric
+        name: formData.get('name'),
+        value: formData.get('value'),
       };
-
-      // ✅ 2) insert into table (change table name if yours differs)
-      const { error } = await supabase.from("sales_deals").insert(newDeal);
-
-      // ✅ 3) handle error
+      console.log(newDeal);
+      const { error } = await supabase.from('sales_deals').insert(newDeal);
       if (error) {
-        console.log(error);
-        return new Error("Could not add deal. Please try again.");
+        console.error('Error adding deal: ', error.message);
+        return new Error('Failed to add deal');
       }
 
-      // no error state
       return null;
     },
-    null
+    null 
   );
 
   const generateOptions = () => {
@@ -57,9 +45,9 @@ function Form({ metrics }) {
           <select
             id="deal-name"
             name="name"
-            defaultValue={metrics?.[0]?.name || ""}
+            defaultValue={metrics?.[0]?.name || ''}
             aria-required="true"
-            aria-invalid={error ? "true" : "false"}
+            aria-invalid={error ? 'true' : 'false'}
             disabled={isPending}
           >
             {generateOptions()}
@@ -77,24 +65,28 @@ function Form({ metrics }) {
             min="0"
             step="10"
             aria-required="true"
-            aria-invalid={error ? "true" : "false"}
+            aria-invalid={error ? 'true' : 'false'}
             aria-label="Deal amount in dollars"
             disabled={isPending}
           />
         </label>
 
-        <button type="submit" disabled={isPending} aria-busy={isPending}>
-          {isPending ? "Adding..." : "Add Deal"}
+        <button
+          type="submit"
+          disabled={isPending}
+          aria-busy={isPending}
+        >
+          {isPending ? 'Adding...' : "Add Deal"}
         </button>
       </form>
 
       {error && (
-        <div role="alert" className="error-message">
+        <div role='alert' className="error-message">
           {error.message}
         </div>
       )}
     </div>
   );
-}
+};
 
 export default Form;
