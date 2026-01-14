@@ -1,9 +1,9 @@
 import { useAuth } from '../context/AuthContext';
 import { useState } from 'react';
-import {useNavigate} from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 function Header() {
-  const { signOut } = useAuth();
+  const { signOut, session } = useAuth();
   const [error, setError] = useState(null);
   const navigate = useNavigate();
 
@@ -33,14 +33,16 @@ function Header() {
           role="navigation"
           aria-label="User account navigation"
         >
-          <button onClick={handleSignOut} aria-label="Sign out of your account">
-            Sign out
-          </button>
+          <h2>{session?.user?.email}</h2>
           {error && (
             <div role="role" className="error-message" id="signout-error">
               {error}
             </div>
           )}
+          <button onClick={handleSignOut} aria-label="Sign out of your account">
+            Sign out
+          </button>
+
         </div>
         <h1>
           <svg
