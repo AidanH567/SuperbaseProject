@@ -1,14 +1,46 @@
 import { Link } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 const Signup = () => {
+    const naviga
+  const [error, submitAction, isPending] = useActionState(
+    async (previousState, formData) => {
+      const email = formData.get('email');
+      const password = formData.get('password');
+    /**
+    Challenge:
+    * 1) Call 'signUpNewUser', passing in the email and password as parameters.
+        Destructure the response into 3 parts (HINT: check the 'signUpNewUser' 
+        function definition)
+    * 2) Handle errors by returning the error using the Error constructor
+    * 3) Handle success (checking 2 parts of the response) by navigating to
+        '/dashboard' and appropriately returning
+    * 4) Handle any other cases as a final fallback	
+    */
+    const { 
+        success,
+        data,
+        error : signUpError
+    } = await signUpNewUser(email, password);
 
+    if (signUpError) {
+        return new Error(signUpError)
+    }
+
+    if (success) {
+        
+    }
+
+    },
+    null
+  );
 
     return (
         <>
             <h1 className="landing-header">Paper Like A Boss</h1>
             <div className="sign-form-container">
                 <form
-                    // action={}
+                    action={submitAction}
                     aria-label="Sign up form"
                     aria-describedby="form-description"
                 >
