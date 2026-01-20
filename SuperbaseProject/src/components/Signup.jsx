@@ -12,6 +12,8 @@ const Signup = () => {
       const email = formData.get('email');
       const password = formData.get('password');
 
+      console.log("RAW email:", email, "TYPE:", typeof email)
+
       const {
         success,
         data,
