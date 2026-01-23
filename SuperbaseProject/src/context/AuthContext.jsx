@@ -1,64 +1,59 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import { supabase } from '../supabase-client';
+import {supabase} from '../supabase-client';
 
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
-  //Session state (user info, sign-in status)
+//Session state (user info, sign-in status)
   const [session, setSession] = useState(undefined);
   const [users, setUsers] = useState([]);
 
-
   useEffect(() => {
-    async function getInitialSession() {
-      try {
-        const { data, error } = await supabase.auth.getSession();
-        if (error) {
-          throw error;
-        }
-        setSession(data.session);
-      } catch (error) {
-        console.error('Error getting session:', error.message);
+  async function getInitialSession() {
+    try {
+      const { data, error } = await supabase.auth.getSession();
+      if (error) {
+        throw error;
       }
+      setSession(data.session);
+    } catch (error) {
+      console.error('Error getting session:', error.message);
     }
-    getInitialSession()
+  }
+  getInitialSession();
 
-    supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      console.log('Session changed:', session);
-    })
-
-    async function fetchUsers() {
-      try {
-        const { data, error } = await supabase
-          .from('user_profiles')
-          .select('id, name, account_type')
-
-        if (error) throw error
-
-        console.log('Fetched users:', data);
-        setUsers(data);
-
-      } catch (error) {
-        console.error('Error fetching users:', error.message || error);
+  supabase.auth.onAuthStateChange((_event, session) => {
+    setSession(session);
+    console.log('Session changed:', session);
+  })
+  /**
+     Warning: When you save and test by logging in, currently the console should show an empty array. Have a think why this is.
+  */
+  async function fetchUsers() {
+    try {
+      const { data, error } = await supabase
+        .from('user_profiles')
+        .select('id, name, account_type');
+      if (error) {
+        throw error;
       }
-
+      console.log('Fetched users:', data);
+      setUsers(data);
+    } catch (error) {
+      console.error('Error fetching users:', error.message);
     }
-    fetchUsers()
+  };
+  fetchUsers();
 
   }, []);
 
-
-
-
-
-
+  //Auth functions
   const signInUser = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signInWithPassword({
-        email: email.toLowerCase(),
+        email: email.toLowerCase(), 
         password: password,
-      })
+      });
       if (error) {
         console.error('Supabase sign-in error:', error.message);
         return { success: false, error: error.message };
@@ -85,24 +80,29 @@ export const AuthContextProvider = ({ children }) => {
     }
   }
 
-  const signUpNewUser = async (email, password) => {
+  const signUpNewUser = async (email, password, name, accountType) => {
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: email.toLowerCase(),
+        email: email.toLowerCase(), 
         password: password,
+        options: {
+          data: {
+            name: name,
+            account_type: accountType,
+          },
+        },
       });
       if (error) {
         console.error('Supabase sign-up error:', error.message);
         return { success: false, error: error.message };
       }
-      console.log('Supabase sign-up success:', data);
+      // console.log('Supabase sign-up success:', data);
       return { success: true, data };
     } catch (error) {
       console.error('Unexpected error during sign-up:', error.message);
       return { success: false, error: 'An unexpected error occurred. Please try again.' };
     }
   }
-
 
   return (
     <AuthContext.Provider value={{ session, signInUser, signOut, signUpNewUser }}>
