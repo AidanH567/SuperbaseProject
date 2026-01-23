@@ -1,35 +1,57 @@
 import { createContext, useState, useContext, useEffect } from 'react';
-import {supabase} from '../supabase-client';
+import { supabase } from '../supabase-client';
 
 const AuthContext = createContext();
 
 export const AuthContextProvider = ({ children }) => {
-//Session state (user info, sign-in status)
+  //Session state (user info, sign-in status)
   const [session, setSession] = useState(undefined);
+  const [users, setUsers] = useState([]);
+
 
   useEffect(() => {
-  async function getInitialSession() {
-    try {
-      const { data, error } = await supabase.auth.getSession();
-      if (error) {
-        throw error;
+    async function getInitialSession() {
+      try {
+        const { data, error } = await supabase.auth.getSession();
+        if (error) {
+          throw error;
+        }
+        setSession(data.session);
+      } catch (error) {
+        console.error('Error getting session:', error.message);
       }
-      setSession(data.session);
-    } catch (error) {
-      console.error('Error getting session:', error.message);
     }
-  }
-  getInitialSession()
+    getInitialSession()
 
-  supabase.auth.onAuthStateChange((_event, session) => {
-    setSession(session);
-    console.log('Session changed:', session);
-  })
+    supabase.auth.onAuthStateChange((_event, session) => {
+      setSession(session);
+      console.log('Session changed:', session);
+    })
+
+    async function fetchUsers() {
+      try {
+        const { data, error } = await supabase
+          .from('user_profiles')
+          .select('id, name, account_type')
+
+        if (error) throw error
+
+        console.log('Fetched users:', data);
+        setUsers(data);
+
+      } catch (error) {
+        console.error('Error fetching users:', error.message || error);
+      }
+
+    }
+    fetchUsers()
 
   }, []);
 
-  //Auth functions (signin, signup, logout)
-  //Sign in (success, data, error)
+
+
+
+
 
   const signInUser = async (email, password) => {
     try {
@@ -66,7 +88,7 @@ export const AuthContextProvider = ({ children }) => {
   const signUpNewUser = async (email, password) => {
     try {
       const { data, error } = await supabase.auth.signUp({
-        email: email.toLowerCase(), 
+        email: email.toLowerCase(),
         password: password,
       });
       if (error) {
