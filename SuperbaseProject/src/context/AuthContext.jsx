@@ -1,4 +1,4 @@
-import { createContext, useState, useContext, useEffect } from 'react';
+import { createContext, useState, useContext, useEffect, use } from 'react';
 import {supabase} from '../supabase-client';
 
 const AuthContext = createContext();
@@ -29,7 +29,13 @@ export const AuthContextProvider = ({ children }) => {
   /**
      Warning: When you save and test by logging in, currently the console should show an empty array. Have a think why this is.
   */
-  async function fetchUsers() {
+
+  }, []);
+
+  useEffect(() => {
+    if (!session) return;
+
+    async function fetchUsers() {
     try {
       const { data, error } = await supabase
         .from('user_profiles')
@@ -44,8 +50,7 @@ export const AuthContextProvider = ({ children }) => {
     }
   };
   fetchUsers();
-
-  }, []);
+  }, [session]);
 
   //Auth functions
   const signInUser = async (email, password) => {
