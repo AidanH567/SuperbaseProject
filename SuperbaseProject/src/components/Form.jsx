@@ -12,7 +12,7 @@ Challenge:
      name
 */
 
-function Form({ metrics }) {
+function Form() {
   const { users } = useAuth();
 
   const [error, submitAction, isPending] = useActionState(
