@@ -1,14 +1,30 @@
 import { useActionState } from 'react';
-import supabase from '../supabase-client';
+import {supabase} from '../supabase-client';
+import { useAuth } from '../context/AuthContext';
+
+/**
+Challenge:
+* 1) Delete all of the records with the old, 'name' and 'value', format in the 
+     'sales_deals' table
+* 2) Add new deals with the new, 'user_id' and 'value', format by logging in and 
+     using the form. Verify the deals are being saved via your Supabase project
+* 3) Test that users with account type 'rep' can only add deals for their own 
+     name
+*/
 
 function Form({ metrics }) {
+  const { users } = useAuth();
+
   const [error, submitAction, isPending] = useActionState(
     async (previousState, formData) => {
+      const submittedName = formData.get('name');
+      const user = users.find((u) => u.name === submittedName);
+      
       const newDeal = {
-        name: formData.get('name'),
+        user_id: user.id, 
         value: formData.get('value'),
       };
-      console.log(newDeal);
+      console.log('newDeal', newDeal);
       const { error } = await supabase.from('sales_deals').insert(newDeal);
       if (error) {
         console.error('Error adding deal: ', error.message);
@@ -21,9 +37,9 @@ function Form({ metrics }) {
   );
 
   const generateOptions = () => {
-    return metrics.map((metric) => (
-      <option key={metric.name} value={metric.name}>
-        {metric.name}
+    return users.map((user) => (
+      <option key={user.id} value={user.name}>
+        {user.name}
       </option>
     ));
   };
