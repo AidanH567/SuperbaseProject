@@ -3,9 +3,11 @@ import { useState } from 'react';
 import { useNavigate } from 'react-router-dom'
 
 function Header() {
-  const { signOut, session } = useAuth();
+  const { signOut, session, users } = useAuth();
   const [error, setError] = useState(null);
   const navigate = useNavigate();
+  
+  const currentUser = users?.find((user) => user.id === session?.user?.id);
 
   const handleSignOut = async (e) => {
     e.preventDefault();
@@ -33,7 +35,8 @@ function Header() {
           role="navigation"
           aria-label="User account navigation"
         >
-          <h2>{session?.user?.email}</h2>
+          <h2>{currentUser?.name}</h2>
+          <h2>{currentUser?.account_type}</h2>
           {error && (
             <div role="role" className="error-message" id="signout-error">
               {error}
