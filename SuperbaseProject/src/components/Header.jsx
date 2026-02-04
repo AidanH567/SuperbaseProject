@@ -12,13 +12,6 @@ function Header() {
   const handleSignOut = async (e) => {
     e.preventDefault();
 
-    /**
-    Challenge:
-    * 1) After a successful sign out (when success is true), use the useNavigate 
-        hook to redirect the user to the home route ('/')
-    * 2) Save and test this functionality
-    */
-
     const { success, error } = await signOut();
     if (success) {
       navigate('/signin');
