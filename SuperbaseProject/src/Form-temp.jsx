@@ -23,7 +23,7 @@ function Form({ metrics }) {
       // ✅ 3) handle error
       if (error) {
         console.log(error);
-        return new Error("Could not add deal. Please try again.");
+        return new Error("Could not add deal.try again.");
       }
 
       // no error state
