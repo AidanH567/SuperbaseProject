@@ -1,12 +1,12 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600&display=swap');
 
 :root {
-  font-family: 'Inter', sans-serif;
+  font-family: 'Arial','Inter', sans-serif;
   line-height: 1.5;
   font-weight: 400;
   letter-spacing: -0.5px; 
   color-scheme: light dark;
-  color: black;
+  color: rgb(37, 34, 34);
   background-color: white;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
